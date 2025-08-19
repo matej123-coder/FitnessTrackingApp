@@ -2,6 +2,7 @@ package com.example.fitnesstrackingapp.service.impl;
 
 import com.example.fitnesstrackingapp.domain.Goal;
 import com.example.fitnesstrackingapp.domain.dto.GoalDto;
+import com.example.fitnesstrackingapp.domain.enums.Status;
 import com.example.fitnesstrackingapp.domain.response.GoalResponse;
 import com.example.fitnesstrackingapp.domain.response.GoalResponsePage;
 import com.example.fitnesstrackingapp.exceptions.GoalNotFoundException;
@@ -14,7 +15,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
+
 @Service
 public class GoalServiceImpl implements GoalService {
     private final GoalRepository goalRepository;
@@ -37,8 +40,16 @@ public class GoalServiceImpl implements GoalService {
     public GoalResponsePage getAllByUserId(Long userId, int pageNo, int pageSize) {
         Pageable page = PageRequest.of(pageNo, pageSize, Sort.by(Sort.Direction.ASC, "title"));
         Page<Goal> goals = goalRepository.findAllByUserId(userId, page);
-        List<GoalResponse> content = goals.getContent().stream().map((goalMapper::modelToResponse)).toList();
+        List<Goal> goalsList = goals.getContent();
+        goalsList.forEach(goal -> {
+            if (goal.getEndDate().isBefore(LocalDate.now())) {
+                goal.setGoalStatus(Status.FAILED);
+            }
+        });
+        goalRepository.saveAll(goalsList);
+        List<GoalResponse> content = goalsList.stream().map((goalMapper::modelToResponse)).toList();
         return goalMapper.responseToResponsePage(goals, content);
+
     }
 
     @Override
@@ -51,7 +62,7 @@ public class GoalServiceImpl implements GoalService {
         Goal goal = goalRepository
                 .findById(id)
                 .orElseThrow(() -> new GoalNotFoundException("Goal not found"));
-        this.goalRepository.save(this.goalMapper.updateDtoToModel(goalDto,goal));
+        this.goalRepository.save(this.goalMapper.updateDtoToModel(goalDto, goal));
     }
 
     @Override
