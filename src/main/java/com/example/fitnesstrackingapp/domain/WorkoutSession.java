@@ -31,6 +31,7 @@ public class WorkoutSession {
     @Column(name="duration")
     private Duration duration;
     @Column(name="workout_type")
+    @Enumerated(value=EnumType.STRING)
     private WorkoutType workoutType;
     @OneToOne(mappedBy = "workoutSession",orphanRemoval = true,cascade = CascadeType.ALL)
     private WeightWorkout weightWorkout;

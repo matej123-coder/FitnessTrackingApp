@@ -3,9 +3,11 @@ package com.example.fitnesstrackingapp.repository;
 import com.example.fitnesstrackingapp.domain.Goal;
 import com.example.fitnesstrackingapp.domain.enums.GoalType;
 import com.example.fitnesstrackingapp.domain.enums.Status;
+import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -34,4 +36,8 @@ public interface GoalRepository extends JpaRepository<Goal, Long> {
             @Param("goalType") String goalType
     );
     Page<Goal> findAllByUserId(Long userId, Pageable page);
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM Goal g where g.userId=:userId")
+    void deleteAllByUserId(@Param("userId") Long userId);
 }

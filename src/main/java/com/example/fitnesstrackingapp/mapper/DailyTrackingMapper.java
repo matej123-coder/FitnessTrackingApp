@@ -26,7 +26,7 @@ public class DailyTrackingMapper {
         DailyTracking dailyTracking = new DailyTracking();
         dailyTracking.setCreatedAt(LocalDate.now());
         dailyTracking.setDailySteps(dailyTrackingDto.getDailySteps());
-        dailyTracking.setDailyWaterIntake(dailyTracking.getDailyWaterIntake());
+        dailyTracking.setDailyWaterIntake(dailyTrackingDto.getDailyWaterIntake());
         dailyTracking.setUserId(userId);
         return dailyTracking;
     }

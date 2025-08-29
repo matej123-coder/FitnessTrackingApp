@@ -42,7 +42,7 @@ public class GoalServiceImpl implements GoalService {
         Page<Goal> goals = goalRepository.findAllByUserId(userId, page);
         List<Goal> goalsList = goals.getContent();
         goalsList.forEach(goal -> {
-            if (goal.getEndDate().isBefore(LocalDate.now())) {
+            if (goal.getEndDate().isBefore(LocalDate.now()) && goal.getGoalStatus()==Status.IN_PROGRESS) {
                 goal.setGoalStatus(Status.FAILED);
             }
         });

@@ -10,6 +10,7 @@ import com.example.fitnesstrackingapp.service.WorkoutSessionService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+
 @Service
 public class WorkoutSessionServiceImpl implements WorkoutSessionService {
     private final WorkoutSessionRepository workoutSessionRepository;
@@ -45,7 +46,8 @@ public class WorkoutSessionServiceImpl implements WorkoutSessionService {
     public void updateWorkout(WorkoutSessionDto workoutSessionDto, Long id) {
         WorkoutSession session = workoutSessionRepository.findById(id)
                 .orElseThrow(() -> new WorkoutNotFounException("Workout not found"));
-        workoutSessionMapper.updateDtoToModel(workoutSessionDto,session);
+       WorkoutSession workoutSession= workoutSessionMapper.updateDtoToModel(workoutSessionDto, session);
+        workoutSessionRepository.save(workoutSession);
     }
 
     @Override

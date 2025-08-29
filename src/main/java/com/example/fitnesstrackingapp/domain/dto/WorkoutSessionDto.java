@@ -39,7 +39,7 @@ public class WorkoutSessionDto {
 
     @NotNull(message = "Workout type must not be null")
     @Pattern(
-            regexp = "Runtime|Weight",
+            regexp = "RUNTIME|WEIGHT",
             message = "Workout type must be one of: Runtime, Weight"
     )
     private String workoutType;

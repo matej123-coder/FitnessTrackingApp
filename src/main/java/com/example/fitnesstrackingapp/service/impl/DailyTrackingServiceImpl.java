@@ -36,7 +36,7 @@ public class DailyTrackingServiceImpl implements DailyTrackingService {
 
     @Override
     public DailyTrackingResponsePage getAllByUserId(Long userId, int pageNo, int pageSize) {
-        Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(Sort.Direction.ASC, "dailyBurnedCalories"));
+        Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(Sort.Direction.ASC, "createdAt"));
         Page<DailyTracking> dailyTrackings = this.dailyTrackingRepository.findAllByUserId(userId, pageable);
         List<DailyTrackingResponse> dailyTrackingResponses = dailyTrackings.getContent().stream().map((dailyTrackingMapper::modelToResponse)).toList();
         return dailyTrackingMapper.responseToResponsePage(dailyTrackings, dailyTrackingResponses);

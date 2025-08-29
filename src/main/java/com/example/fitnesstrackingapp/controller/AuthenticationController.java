@@ -11,6 +11,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @RestController
 @RequestMapping("/auth")
 @CrossOrigin
@@ -40,7 +43,9 @@ public class AuthenticationController {
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> signin(@RequestBody @Valid LoginDto loginDto) {
        User authenticatedUser= authenticationService.signin(loginDto);
-       String jwtToken=jwtService.generateToken(authenticatedUser);
+        Map<String,Object> claims = new HashMap<>();
+        claims.put("userId",authenticatedUser.getId());
+       String jwtToken=jwtService.generateToken(authenticatedUser,claims);
        LoginResponse loginResponse= new LoginResponse(jwtToken, jwtService.getExpirationTime());
         return ResponseEntity.ok(loginResponse);
     }

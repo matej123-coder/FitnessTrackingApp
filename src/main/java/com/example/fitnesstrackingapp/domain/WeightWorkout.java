@@ -3,6 +3,7 @@ package com.example.fitnesstrackingapp.domain;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,6 +12,7 @@ import java.util.List;
 @Table(name = "weight_workouts")
 @Data
 @NoArgsConstructor
+@ToString(exclude = {"exercises","workoutSession"})
 public class WeightWorkout {
     @Id
     private Long id;

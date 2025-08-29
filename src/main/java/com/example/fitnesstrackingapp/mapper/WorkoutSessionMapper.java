@@ -4,18 +4,27 @@ import com.example.fitnesstrackingapp.domain.Exercise;
 import com.example.fitnesstrackingapp.domain.RuntimeWorkout;
 import com.example.fitnesstrackingapp.domain.WeightWorkout;
 import com.example.fitnesstrackingapp.domain.WorkoutSession;
+import com.example.fitnesstrackingapp.domain.dto.ExerciseDto;
 import com.example.fitnesstrackingapp.domain.dto.WorkoutSessionDto;
 import com.example.fitnesstrackingapp.domain.enums.WorkoutType;
 import com.example.fitnesstrackingapp.domain.response.ExerciseResponse;
 import com.example.fitnesstrackingapp.domain.response.WorkoutSessionResponse;
+import com.example.fitnesstrackingapp.repository.WeightWorkoutRepository;
+import com.example.fitnesstrackingapp.repository.WorkoutSessionRepository;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Component
 public class WorkoutSessionMapper {
+    private final WeightWorkoutRepository weightWorkoutRepository;
+    private final WorkoutSessionRepository workoutSessionRepository;
+    public WorkoutSessionMapper(WeightWorkoutRepository weightWorkoutRepository, WorkoutSessionRepository workoutSessionRepository) {
+        this.weightWorkoutRepository = weightWorkoutRepository;
+        this.workoutSessionRepository = workoutSessionRepository;
+    }
+
     public WorkoutSession dtoToModel(WorkoutSessionDto dto, Long userId) {
         WorkoutSession session = new WorkoutSession();
         session.setName(dto.getName());
@@ -24,7 +33,7 @@ public class WorkoutSessionMapper {
         session.setBurnedCalories(dto.getBurnedCalories());
         session.setCreatedAt(LocalDate.now());
         session.setDuration(dto.getDuration());
-        session.setWorkoutType(WorkoutType.valueOf(dto.getWorkoutType().toUpperCase()));
+        session.setWorkoutType(WorkoutType.valueOf(dto.getWorkoutType()));
 
         if (session.getWorkoutType() == WorkoutType.RUNTIME) {
             RuntimeWorkout runtimeWorkout = new RuntimeWorkout();
@@ -57,28 +66,51 @@ public class WorkoutSessionMapper {
         session.setBurnedCalories(dto.getBurnedCalories());
         session.setCreatedAt(LocalDate.now());
         session.setDuration(dto.getDuration());
-        session.setWorkoutType(WorkoutType.valueOf(dto.getWorkoutType().toUpperCase()));
+        session.setWorkoutType(WorkoutType.valueOf(dto.getWorkoutType()));
 
+        // Handle runtime workouts
         if (session.getWorkoutType() == WorkoutType.RUNTIME) {
-            RuntimeWorkout runtimeWorkout = new RuntimeWorkout();
+            // Remove weight workout if present
+            if (session.getWeightWorkout() != null) {
+                weightWorkoutRepository.deleteById(session.getId());
+            }
+
+            RuntimeWorkout runtimeWorkout = session.getRuntimeWorkout();
+            if (runtimeWorkout == null) {
+                runtimeWorkout = new RuntimeWorkout();
+            }
             runtimeWorkout.setPace(dto.getPace());
             runtimeWorkout.setDistance(dto.getDistance());
-            runtimeWorkout.setWorkoutSession(session);
+            runtimeWorkout.setWorkoutSession(session); // set back-reference
             session.setRuntimeWorkout(runtimeWorkout);
-        } else if (session.getWorkoutType() == WorkoutType.WEIGHT) {
-            WeightWorkout weightWorkout = new WeightWorkout();
-            weightWorkout.setWorkoutSession(session);
-            List<Exercise> exercises = dto.getExercises().stream().map(e -> {
+        }
+
+        // Handle weight workouts
+        else if (session.getWorkoutType() == WorkoutType.WEIGHT) {
+            // Remove runtime workout if present
+            if (session.getRuntimeWorkout() != null) {
+                session.getRuntimeWorkout().setWorkoutSession(null); // break FK reference
+                session.setRuntimeWorkout(null);
+            }
+
+            WeightWorkout weightWorkout = session.getWeightWorkout();
+            if (weightWorkout == null) {
+                weightWorkout = new WeightWorkout();
+            }
+            weightWorkout.setWorkoutSession(session); // set back-reference
+            session.setWeightWorkout(weightWorkout);
+
+            // Reset exercises
+            weightWorkout.getExercises().clear();
+            for (ExerciseDto e : dto.getExercises()) {
                 Exercise ex = new Exercise();
                 ex.setExerciseName(e.getExerciseName());
                 ex.setWeight(e.getWeight());
                 ex.setNumberOfSets(e.getNumberOfSets());
                 ex.setNumberOfReps(e.getNumberOfReps());
-                ex.setWeightWorkout(weightWorkout);
-                return ex;
-            }).toList();
-            weightWorkout.setExercises(exercises);
-            session.setWeightWorkout(weightWorkout);
+                ex.setWeightWorkout(weightWorkout); // set back-reference
+                weightWorkout.getExercises().add(ex);
+            }
         }
 
         return session;

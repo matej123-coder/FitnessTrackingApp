@@ -27,8 +27,8 @@ public class GoalDto {
 
     @NotNull(message = "Goal type is required")
     @Pattern(
-            regexp = "Distance|Steps|Burned Calories|Calories Intake",
-            message = "Goal must be one of:Distance, Weight, Steps, Calories"
+            regexp = "STEPS|BURNED_CALORIES|CALORIES_INTAKE",
+            message = "Goal must be one of:DISTANCE, BURNED_CALORIES, STEPS, CALORIES_INTAKE"
     )
     private String goal;
 
@@ -42,8 +42,8 @@ public class GoalDto {
 
     @NotNull(message = "Goal status is required")
     @Pattern(
-            regexp = "In Progress|Completed|Failed",
-            message = "Goal status must be one of:In Progress, Completed, Failed"
+            regexp = "IN_PROGRESS|COMPLETED|FAILED",
+            message = "Goal status must be one of:IN_PROGRESS, COMPLETED, FAILED"
     )
     private String goalStatus;
 }

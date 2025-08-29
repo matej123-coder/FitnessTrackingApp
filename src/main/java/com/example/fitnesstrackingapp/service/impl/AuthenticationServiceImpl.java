@@ -16,6 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
@@ -41,6 +42,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         Optional<User> existingUser = userRepository.findByEmail(registerUserDto.getEmail());
         if (existingUser.isPresent()) {
             throw new UserAlreadyLoggedIn("Email already registered");
+        }
+        Optional<User > existing = userRepository.findByUsername(registerUserDto.getUsername());
+        if (existing.isPresent()) {
+            throw new UserAlreadyLoggedIn("Username already exists enter a new one");
         }
 
         User newUser = userMapper.toModel(registerUserDto);
@@ -150,11 +155,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     public void changePassword(ChangePasswordDto changePasswordDto) {
         Optional<User> existingUser = this.userRepository.findByResetPasswordToken(changePasswordDto.getResetPasswordToken());
-        if(existingUser.isEmpty()){
+        if (existingUser.isEmpty()) {
             throw new UserNotFoundException("Wrong reset password token");
         }
         User user = existingUser.get();
-        if ( user.getResetPasswordTokenExpiresAt().isBefore(LocalDateTime.now())){
+        if (user.getResetPasswordTokenExpiresAt().isBefore(LocalDateTime.now())) {
             throw new RuntimeException("Reset password token has expired");
         }
         user.setPassword(passwordEncoder.encode(changePasswordDto.getNewPassword()));
@@ -193,7 +198,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private void sendResetPasswordEmail(User user) {
         String subject = "Reset Password";
         String resetPasswordToken = user.getResetPasswordToken();
-        String resetLink = "https://webhook.site/2053a8bf-e47e-4353-a176-d2180378b9d6?token=" + resetPasswordToken;
+        String resetLink = "http://localhost:5173/change-password?token=" + resetPasswordToken;
 
         String htmlMessage = "<html>"
                 + "<body style=\"font-family: Arial, sans-serif;\">"

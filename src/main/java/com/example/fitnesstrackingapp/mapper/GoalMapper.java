@@ -15,11 +15,8 @@ import java.util.List;
 public class GoalMapper {
     public Goal dtoToModel(GoalDto goalDto,Long userId) {
         Goal goal = new Goal();
-        goal.setGoalStatus(Status.valueOf(goalDto
-                .getGoalStatus()
-                .toUpperCase()
-                .replace(" ", "_")));
-        goal.setGoal(GoalType.valueOf(goalDto.getGoal().toUpperCase().replace(" ","_")));
+        goal.setGoalStatus(Status.IN_PROGRESS);
+        goal.setGoal(GoalType.valueOf(goalDto.getGoal()));
         goal.setDescription(goalDto.getDescription());
         goal.setTitle(goalDto.getTitle());
         goal.setTargetValue(goalDto.getTargetValue());
@@ -42,11 +39,8 @@ public class GoalMapper {
         return goalResponse;
     }
     public Goal updateDtoToModel(GoalDto goalDto,Goal goal){
-        goal.setGoalStatus(Status.valueOf(goalDto
-                .getGoalStatus()
-                .toUpperCase()
-                .replace(" ", "_")));
-        goal.setGoal(GoalType.valueOf(goalDto.getGoal().toUpperCase()));
+        goal.setGoalStatus(Status.valueOf(goalDto.getGoalStatus()));
+        goal.setGoal(GoalType.valueOf(goalDto.getGoal()));
         goal.setDescription(goalDto.getDescription());
         goal.setTitle(goalDto.getTitle());
         goal.setTargetValue(goalDto.getTargetValue());

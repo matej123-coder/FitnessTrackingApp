@@ -1,8 +1,10 @@
 package com.example.fitnesstrackingapp.repository;
 
 import com.example.fitnesstrackingapp.domain.WorkoutSession;
+import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -18,4 +20,10 @@ public interface WorkoutSessionRepository extends JpaRepository<WorkoutSession,L
             nativeQuery = true)
    List<WorkoutSession> findAllWorkoutSessionPeriod(@Param("period") String period,@Param("userId") Long userId);
     List<WorkoutSession> findAllByUserIdOrderByCreatedAtAsc(Long userId);
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM WorkoutSession w where w.userId=:userId")
+    void deleteAllByUserId(@Param("userId") Long userId);
+    @Query(value = "SELECT w.id from workout_sessions w where w.user_id=:id",nativeQuery = true)
+    List<Long> findAllIds(@Param("id") Long id);
 }

@@ -1,9 +1,11 @@
 package com.example.fitnesstrackingapp.repository;
 
 import com.example.fitnesstrackingapp.domain.Meal;
+import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -20,4 +22,8 @@ public interface MealRepository extends JpaRepository<Meal, Long> {
     List<Meal> findAllMealsPeriod(@Param("period") String period, @Param("userId") Long userId);
 
     Page<Meal> findAllByUserId(Long userId, Pageable pageable);
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM Meal m where m.userId=:userId")
+    void deleteAllByUserId(@Param("userId") Long userId);
 }
