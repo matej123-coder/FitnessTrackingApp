@@ -1,9 +1,14 @@
 import {Menu, X, Zap} from "lucide-react";
 import {Link} from "react-router-dom";
-import {useState} from "react";
+import {useEffect, useState} from "react";
+import {UserService} from "../lib/services/userService.ts";
+import {AxiosError} from "axios";
+import {notifications} from "@mantine/notifications";
+import {useAuth} from "../lib/hooks/useAuth.ts";
 
 export const NavBar = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+
     return (
         <nav className="relative z-50 px-6 py-4 backdrop-blur-md bg-white/5 border-b border-white/10">
             <div className="max-w-7xl mx-auto flex items-center justify-between">

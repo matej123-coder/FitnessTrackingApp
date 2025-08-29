@@ -4,6 +4,7 @@ import {useAuth} from "../lib/hooks/useAuth.ts";
 import {AxiosError} from "axios";
 import {notifications} from "@mantine/notifications";
 import {UserService} from "../lib/services/userService.ts";
+import {JSX} from "react"
 import {
     IconCake,
     IconGenderBigender,
@@ -22,6 +23,7 @@ export const ProfileDetails = () => {
     const {user, logout} = useAuth();
     const navigate =  useNavigate();
     const [userDetails, setUserDetails] = useState<UserResponse>({
+        id:0,
         username: '',
         email: '',
         age: 0,
@@ -167,6 +169,17 @@ export const ProfileDetails = () => {
                     >
                         Logout
                     </Button>
+                    {userDetails.role=="ADMIN" && <Button
+                        leftSection={<IconUser size={18}/>}
+                        variant="gradient"
+                        gradient={{from: "green", to: "cyan"}}
+                        radius="md"
+                        fullWidth
+                        onClick={() => navigate("/users")}
+                    >
+                        View Users
+                    </Button>
+                    }
                     <Button
                         leftSection={<IconTrash size={18}/>}
                         color="red"

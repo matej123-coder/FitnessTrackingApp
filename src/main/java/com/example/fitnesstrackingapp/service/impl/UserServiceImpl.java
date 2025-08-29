@@ -1,6 +1,7 @@
 package com.example.fitnesstrackingapp.service.impl;
 
 import com.example.fitnesstrackingapp.domain.User;
+import com.example.fitnesstrackingapp.domain.enums.Role;
 import com.example.fitnesstrackingapp.domain.response.UserResponse;
 import com.example.fitnesstrackingapp.exceptions.UserNotFoundException;
 import com.example.fitnesstrackingapp.mapper.UserMapper;
@@ -59,5 +60,19 @@ public class UserServiceImpl implements UserService {
         goalRepository.deleteAllByUserId(id);
         dailyTrackingRepository.deleteAllByUserId(id);
         userRepository.deleteById(id);
+    }
+
+    @Override
+    public void makeAdmin(Long id) {
+        User user = userRepository
+                .findById(id)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
+        if (user.getRole().equals(Role.USER)) {
+            user.setRole(Role.ADMIN);
+        } else {
+            user.setRole(Role.USER);
+        }
+        userRepository.save(user);
+
     }
 }

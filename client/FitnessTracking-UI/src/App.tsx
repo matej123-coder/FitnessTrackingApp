@@ -24,6 +24,8 @@ import {DailyTrackingAdd} from "./pages/DailyTrackingAdd.tsx";
 import {Daily} from "./pages/Daily.tsx";
 import {DailyTrackingEdit} from "./pages/DailyTrackingEdit.tsx";
 import {Profile} from "./pages/Profile.tsx";
+import {Users} from "./pages/Users.tsx";
+
 
 function App() {
 
@@ -54,6 +56,7 @@ function App() {
                     <Route path={"/edit-goal"} element={<ProtectedRoute><EditGoal/></ProtectedRoute>}/>
                     <Route path={"/add-meal"} element={<ProtectedRoute><AddMealPage/></ProtectedRoute>}/>
                     <Route path={"/profile"} element={<ProtectedRoute><Profile/></ProtectedRoute>}/>
+                    <Route path={"/users"} element={<ProtectedRoute><Users/></ProtectedRoute>} />
                     <Route path={"/forgot-password"} element={<PublicRoute><ForgotPassword/></PublicRoute>}/>
                     <Route path={"/change-password"} element={<PublicRoute><ChangePassword/></PublicRoute>}/>
                 </Routes>

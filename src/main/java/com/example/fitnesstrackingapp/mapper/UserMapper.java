@@ -29,6 +29,7 @@ public class UserMapper {
     }
     public UserResponse toDto(User user){
         UserResponse userDto=new UserResponse();
+        userDto.setId(user.getId());
         userDto.setEmail(user.getEmail());
         userDto.setHeight(user.getHeight());
         userDto.setWeight(user.getWeight());

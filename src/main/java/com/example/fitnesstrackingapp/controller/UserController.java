@@ -22,7 +22,11 @@ public class UserController {
     public ResponseEntity<List<UserResponse>> getUsers() {
         return ResponseEntity.status(HttpStatus.OK).body(userService.getAllUsers());
     }
-
+    @PostMapping("/makeAdmin/{id}")
+    public ResponseEntity<?> makeAdmin(@PathVariable Long id){
+        userService.makeAdmin(id);
+        return ResponseEntity.status(HttpStatus.OK).body("User has been made admin");
+    }
     @GetMapping("/{id}")
     public ResponseEntity<UserResponse> getUser(@PathVariable Long id) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.getUser(id));

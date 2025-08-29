@@ -155,6 +155,7 @@ interface DailyTrackingResponsePage{
     totalPages: number,
 }
 interface UserResponse{
+    id:number;
     username: string,
     email: string,
     fullName: string,
