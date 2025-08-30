@@ -1,12 +1,13 @@
 import {Button, Card, Container, Flex, Group, Pagination, Table, Text, Title,Badge} from "@mantine/core";
 import {formatDate} from "../lib/utils/formatDate.ts";
-import {IconEdit, IconTrash} from "@tabler/icons-react";
+import {IconEdit, IconSearch, IconTrash} from "@tabler/icons-react";
 import {useNavigate} from "react-router-dom";
 import {useEffect, useState} from "react";
 import {AxiosError} from "axios";
 import {notifications} from "@mantine/notifications";
 import {GoalService} from "../lib/services/goalService.ts";
-
+import {TextInput} from "@mantine/core";
+import {JSX} from "react"
 export const GoalTable = ()=>{
     const navigate=useNavigate();
     const [goals, setGoals] = useState<GoalResponsePage>({
@@ -18,11 +19,11 @@ export const GoalTable = ()=>{
         isLast: false
     });
     const [showTable, setShowTable] = useState<boolean>(false)
-
-    const fetchAllGoals = async (pageSize: number, pageNo: number) => {
+    const [searchParam, setSearchParam] = useState<string>("");
+    const fetchAllGoals = async (pageSize: number, pageNo: number,searchParam:string='') => {
         try {
 
-            const res = await GoalService.getAllGoals(pageSize, pageNo);
+            const res = await GoalService.getAllGoals(pageSize, pageNo,searchParam);
             setGoals(res)
         } catch (error) {
             if (error instanceof AxiosError) {
@@ -51,7 +52,7 @@ export const GoalTable = ()=>{
         }
     }
     const handleChange = (value: number) => {
-        fetchAllGoals(goals.pageSize, value - 1).catch((error) => {
+        fetchAllGoals(goals.pageSize, value - 1,searchParam).catch((error) => {
             console.error(error)
         })
     }
@@ -62,6 +63,11 @@ export const GoalTable = ()=>{
         const timer = setTimeout(() => setShowTable(true), 500);
         return () => clearTimeout(timer);
     }, []);
+    const handleSearch = () => {
+        fetchAllGoals(goals.pageSize, 0, searchParam).catch((error) => {
+            console.error(error);
+        });
+    };
     return(
         <Container size="lg" py="xl">
             <Group mb="lg" align="center" justify="space-between">
@@ -73,7 +79,26 @@ export const GoalTable = ()=>{
                     + Add Goal
                 </Button>
             </Group>
-
+            <Flex mb="md" justify="flex-start">
+                <TextInput
+                    placeholder="Search goals by title..."
+                    value={searchParam}
+                    onChange={(e) => setSearchParam(e.currentTarget.value)}
+                    leftSection={<IconSearch size={16}/>}
+                    radius="md"
+                    size="md"
+                    style={{ width: "300px" }}
+                />
+                <Button
+                    ml="sm"
+                    variant="light"
+                    color="blue"
+                    radius="md"
+                    onClick={handleSearch}
+                >
+                    Search
+                </Button>
+            </Flex>
             <Card
                 shadow="sm"
                 padding="lg"

@@ -1,8 +1,8 @@
 import apiClient from "../api/apiClient.ts";
 
 export class GoalService{
-    static async getAllGoals(pageSize:number,pageNo:number):Promise<GoalResponsePage>{
-        const res =await apiClient.get(`/goals?pageSize=${encodeURIComponent(pageSize)}&pageNo=${encodeURIComponent(pageNo)}`)
+    static async getAllGoals(pageSize:number,pageNo:number,searchParam:string):Promise<GoalResponsePage>{
+        const res =await apiClient.get(`/goals?pageSize=${encodeURIComponent(pageSize)}&pageNo=${encodeURIComponent(pageNo)}&searchParam=${encodeURIComponent(searchParam)}`)
         return res.data
     }
     static async getGoal(id:number):Promise<GoalResponse>{

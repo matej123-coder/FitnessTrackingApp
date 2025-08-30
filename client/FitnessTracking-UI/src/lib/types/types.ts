@@ -143,7 +143,7 @@ interface DailyTrackingResponse {
     id: number;
     dailySteps: number;
     dailyWaterIntake: number;
-    createdAt: number;
+    createdAt: string;
     userId: number;
 }
 interface DailyTrackingResponsePage{
@@ -165,4 +165,7 @@ interface UserResponse{
     age: number,
     gender: string,
     role:string
+}
+interface DashboardData{
+    [key:string] : number;
 }

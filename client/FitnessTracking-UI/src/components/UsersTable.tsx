@@ -1,4 +1,4 @@
-import {useEffect, useState} from "react";
+import {useEffect, useMemo, useState} from "react";
 import {Card, Container, Group, Text, Title, Button, Table} from "@mantine/core";
 import { IconUser, IconUserExclamation} from "@tabler/icons-react";
 import {AxiosError} from "axios";
@@ -22,7 +22,7 @@ export const UsersTable = () => {
         try {
             const res = await UserService.fetchAllUsers();
             setUsers(res)
-            setUsers((prevState) => prevState.filter((userDetails) => userDetails.id !== user))
+            console.log(user)
         } catch (error) {
             if (error instanceof AxiosError) {
                 notifications.show({
@@ -35,6 +35,10 @@ export const UsersTable = () => {
             }
         }
     }
+    const visibleUsers = useMemo(
+        () => users.filter((u) => u.id !== user),
+        [users]
+    );
     const makeAdmin = async (id: number) => {
         try {
             await UserService.makeAdmin(id);
@@ -79,7 +83,7 @@ export const UsersTable = () => {
                     </Table.Thead>
 
                     <Table.Tbody>
-                        {users.map((user) => (
+                        {visibleUsers.map((user) => (
                             <Table.Tr key={user.id}>
                                 <Table.Td>{user.fullName}</Table.Td>
                                 <Table.Td>{user.email}</Table.Td>

@@ -1,6 +1,7 @@
 package com.example.fitnesstrackingapp.repository;
 
 import com.example.fitnesstrackingapp.domain.Goal;
+import com.example.fitnesstrackingapp.domain.Meal;
 import com.example.fitnesstrackingapp.domain.enums.GoalType;
 import com.example.fitnesstrackingapp.domain.enums.Status;
 import jakarta.transaction.Transactional;
@@ -16,28 +17,33 @@ import java.util.List;
 
 public interface GoalRepository extends JpaRepository<Goal, Long> {
     @Query(value = """
-    SELECT * FROM goals g
-    WHERE g.user_id = :userId
-      AND (:goalType IS NULL OR g.goal_type::text = :goalType)
-      AND (:status IS NULL OR g.status::text = :status)
-      AND (
-            (:period = 'daily' AND DATE(g.start_date) = CURRENT_DATE AND DATE(g.end_date) = CURRENT_DATE)
-         OR (:period = 'weekly' AND DATE_TRUNC('week', g.start_date) = DATE_TRUNC('week', CURRENT_DATE)
-                               AND DATE_TRUNC('week', g.end_date) = DATE_TRUNC('week', CURRENT_DATE))
-         OR (:period = 'monthly' AND DATE_TRUNC('month', g.start_date) = DATE_TRUNC('month', CURRENT_DATE)
-                                 AND DATE_TRUNC('month', g.end_date) = DATE_TRUNC('month', CURRENT_DATE))
-         OR (:period = 'all')
-      )
-    """, nativeQuery = true)
+            SELECT * FROM goals g
+            WHERE g.user_id = :userId
+              AND (:goalType IS NULL OR g.goal_type::text = :goalType)
+              AND (:status IS NULL OR g.status::text = :status)
+              AND (
+                    (:period = 'daily' AND DATE(g.start_date) = CURRENT_DATE AND DATE(g.end_date) = CURRENT_DATE)
+                 OR (:period = 'weekly' AND DATE_TRUNC('week', g.start_date) = DATE_TRUNC('week', CURRENT_DATE)
+                                       AND DATE_TRUNC('week', g.end_date) = DATE_TRUNC('week', CURRENT_DATE))
+                 OR (:period = 'monthly' AND DATE_TRUNC('month', g.start_date) = DATE_TRUNC('month', CURRENT_DATE)
+                                         AND DATE_TRUNC('month', g.end_date) = DATE_TRUNC('month', CURRENT_DATE))
+                 OR (:period = 'all')
+              )
+            """, nativeQuery = true)
     List<Goal> findGoalsFiltered(
             @Param("userId") Long userId,
             @Param("period") String period,
             @Param("status") String status,
             @Param("goalType") String goalType
     );
+
     Page<Goal> findAllByUserId(Long userId, Pageable page);
+
     @Modifying
     @Transactional
     @Query("DELETE FROM Goal g where g.userId=:userId")
     void deleteAllByUserId(@Param("userId") Long userId);
+
+    @Query("select g from Goal g where lower(g.title) like lower(concat('%', :searchParam, '%')) and g.userId=:userId")
+    Page<Goal> findAllBySearchParam(@Param("searchParam") String searchParam, Pageable pageable, @Param("userId") Long userId);
 }

@@ -16,7 +16,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.Iterator;
 import java.util.List;
+import java.util.function.Function;
 
 @Service
 public class GoalServiceImpl implements GoalService {
@@ -37,9 +39,15 @@ public class GoalServiceImpl implements GoalService {
     }
 
     @Override
-    public GoalResponsePage getAllByUserId(Long userId, int pageNo, int pageSize) {
+    public GoalResponsePage getAllByUserId(Long userId, int pageNo, int pageSize,String searchParam) {
         Pageable page = PageRequest.of(pageNo, pageSize, Sort.by(Sort.Direction.ASC, "title"));
-        Page<Goal> goals = goalRepository.findAllByUserId(userId, page);
+        Page<Goal> goals;
+        if(searchParam !=null && !searchParam.isEmpty()){
+            goals = goalRepository.findAllBySearchParam(searchParam,page,userId);
+        }
+        else {
+             goals = goalRepository.findAllByUserId(userId, page);
+        }
         List<Goal> goalsList = goals.getContent();
         goalsList.forEach(goal -> {
             if (goal.getEndDate().isBefore(LocalDate.now()) && goal.getGoalStatus()==Status.IN_PROGRESS) {

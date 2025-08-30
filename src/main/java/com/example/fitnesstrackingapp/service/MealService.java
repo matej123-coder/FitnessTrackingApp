@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface MealService {
     MealResponse getById(Long id);
-    MealResponsePage getAllByUserId(Long userId,int pageNo,int pageSize);
+    MealResponsePage getAllByUserId(Long userId,int pageNo,int pageSize,String searchParam);
     void createMeal(MealDto mealDto,Long userId);
     void updateMeal(MealDto mealDto,Long id);
     void deleteMeal(Long id );

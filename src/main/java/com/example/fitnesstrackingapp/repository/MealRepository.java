@@ -22,8 +22,12 @@ public interface MealRepository extends JpaRepository<Meal, Long> {
     List<Meal> findAllMealsPeriod(@Param("period") String period, @Param("userId") Long userId);
 
     Page<Meal> findAllByUserId(Long userId, Pageable pageable);
+
     @Modifying
     @Transactional
     @Query("DELETE FROM Meal m where m.userId=:userId")
     void deleteAllByUserId(@Param("userId") Long userId);
+
+    @Query("select m from Meal m where lower(m.name) like lower(concat('%', :searchParam, '%')) and m.userId=:userId")
+    Page<Meal> findAllBySearchParam(@Param("searchParam") String searchParam, Pageable pageable,@Param("userId") Long userId);
 }

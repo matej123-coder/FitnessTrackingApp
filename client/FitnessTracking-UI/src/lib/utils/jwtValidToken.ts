@@ -3,6 +3,7 @@ import {jwtDecode} from "jwt-decode";
 interface JwtPayload {
     exp: number;
     userId:number;
+    sub:string;
     [key: string]: any;
 }
 
@@ -32,4 +33,15 @@ export const getUserId = (token: string | null) => {
         console.error("Cannot retrieve userId", error)
     }
 
+}
+export const getUsername = (token: string| null) =>{
+    if (!token){
+        return null;
+    }
+    try {
+        const decodedToken = jwtDecode<JwtPayload>(token)
+        return decodedToken.sub ?? null
+    }catch (error){
+        console.error("Cannot retrieve username",error)
+    }
 }

@@ -1,8 +1,8 @@
 import apiClient from "../api/apiClient.ts";
 
 export class MealsService{
-    static async getAllMeals(pageSize:number,pageNo:number):Promise<MealsResponsePage>{
-        const res = await apiClient.get(`/meals?pageNo=${encodeURIComponent(pageNo)}&pageSize=${encodeURIComponent(pageSize)}`)
+    static async getAllMeals(pageSize:number,pageNo:number,searchParam:string):Promise<MealsResponsePage>{
+        const res = await apiClient.get(`/meals?pageNo=${encodeURIComponent(pageNo)}&pageSize=${encodeURIComponent(pageSize)}&searchParam=${encodeURIComponent(searchParam)}`)
         return res.data;
     }
     static async createMeal(data:MealDto):Promise<void>{

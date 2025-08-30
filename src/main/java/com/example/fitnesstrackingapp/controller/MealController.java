@@ -29,10 +29,11 @@ public class MealController {
     public ResponseEntity<MealResponsePage> getAllByUserId(
             @AuthenticationPrincipal User user,
             @RequestParam(required = false, defaultValue = "1", value = "pageNo") int pageNo,
-            @RequestParam(required = false, defaultValue = "10", value = "pageSize") int pageSize
+            @RequestParam(required = false, defaultValue = "10", value = "pageSize") int pageSize,
+            @RequestParam(required=false) String searchParam
     ) {
         Long userId = user.getId();
-        return ResponseEntity.status(HttpStatus.OK).body(this.mealService.getAllByUserId(userId,pageNo,pageSize));
+        return ResponseEntity.status(HttpStatus.OK).body(this.mealService.getAllByUserId(userId,pageNo,pageSize,searchParam));
     }
 
     @GetMapping("/{id}")

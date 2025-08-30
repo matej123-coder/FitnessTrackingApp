@@ -5,7 +5,8 @@ import {notifications} from "@mantine/notifications";
 import {Button, Card, Container, Flex, Group, Pagination, Table, Text, Title} from "@mantine/core";
 import {IconEdit, IconTrash} from "@tabler/icons-react";
 import {DailyTrackingService} from "../lib/services/dailyTrackingService.ts";
-
+import {formatDate} from "../lib/utils/formatDate.ts";
+import {JSX} from "react"
 export const DailyTable = () => {
     const [dailies, setDailies] = useState<DailyTrackingResponsePage>({
         content: [],
@@ -64,7 +65,7 @@ export const DailyTable = () => {
         <Container size="lg" py="xl">
             <Group mb="lg" align="center" justify="space-between">
                 <div>
-                    <Title order={2}>My Daily Activites</Title>
+                    <Title order={2}>My Daily Activities</Title>
                     <Text c="gray-300">Here you can view, edit, and manage all of your daily trackings.</Text>
                 </div>
                 <Button variant="filled" color="blue" radius="md" onClick={() => navigate("/dailyTracking")}>
@@ -86,6 +87,7 @@ export const DailyTable = () => {
                         <Table.Tr>
                             <Table.Th>Daily Steps</Table.Th>
                             <Table.Th>Daily Water Intake</Table.Th>
+                            <Table.Th>Created At</Table.Th>
                             <Table.Th>Actions</Table.Th>
                         </Table.Tr>
                     </Table.Thead>
@@ -95,6 +97,7 @@ export const DailyTable = () => {
                             <Table.Tr key={daily.id}>
                                 <Table.Td>{daily.dailySteps}</Table.Td>
                                 <Table.Td>{daily.dailyWaterIntake}</Table.Td>
+                                <Table.Td>{formatDate(daily.createdAt)}</Table.Td>
                                 <Table.Td>
                                     <Group gap="xs">
                                         <Button

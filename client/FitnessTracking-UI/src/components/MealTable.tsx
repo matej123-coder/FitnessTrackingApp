@@ -1,11 +1,12 @@
-import {Button, Card, Container, Flex, Group, Pagination, Table, Text, Title} from "@mantine/core";
-import {IconEdit, IconTrash} from "@tabler/icons-react";
+import {Button, Card, Container, Flex, Group, Pagination, Table, Text, TextInput, Title} from "@mantine/core";
+import {IconEdit, IconSearch, IconTrash} from "@tabler/icons-react";
 import {useEffect, useState} from "react";
 import {MealsService} from "../lib/services/mealsService.ts";
 import {AxiosError} from "axios";
 import {notifications} from "@mantine/notifications";
 import {formatDate} from "../lib/utils/formatDate.ts";
 import {useNavigate} from "react-router-dom";
+import {JSX} from "react"
 
 export const MealTable = () => {
     const [meals, setMeals] = useState<MealsResponsePage>({
@@ -18,10 +19,11 @@ export const MealTable = () => {
     });
     const navigate = useNavigate();
     const [showTable, setShowTable] = useState<boolean>(false)
-    const fetchAllMeals = async (pageSize: number, pageNo: number) => {
+    const [searchParam, setSearchParam] = useState<string>("");
+    const fetchAllMeals = async (pageSize: number, pageNo: number, searchParam: string = "") => {
         try {
 
-            const res = await MealsService.getAllMeals(pageSize, pageNo);
+            const res = await MealsService.getAllMeals(pageSize, pageNo, searchParam);
             setMeals(res)
         } catch (error) {
             if (error instanceof AxiosError) {
@@ -36,7 +38,7 @@ export const MealTable = () => {
         }
     }
     const handleChange = (value: number) => {
-        fetchAllMeals(meals.pageSize, value - 1).catch((error) => {
+        fetchAllMeals(meals.pageSize, value - 1,searchParam).catch((error) => {
             console.error(error)
         })
     }
@@ -61,6 +63,11 @@ export const MealTable = () => {
         const timer = setTimeout(() => setShowTable(true), 500);
         return () => clearTimeout(timer);
     }, []);
+    const handleSearch = () => {
+        fetchAllMeals(meals.pageSize, 0, searchParam).catch((error) => {
+            console.error(error);
+        });
+    };
     return (
         <Container size="lg" py="xl">
             <Group mb="lg" align="center" justify="space-between">
@@ -72,7 +79,26 @@ export const MealTable = () => {
                     + Add Meal
                 </Button>
             </Group>
-
+            <Flex mb="md" justify="flex-start">
+                <TextInput
+                    placeholder="Search meals by name..."
+                    value={searchParam}
+                    onChange={(e) => setSearchParam(e.currentTarget.value)}
+                    leftSection={<IconSearch size={16}/>}
+                    radius="md"
+                    size="md"
+                    style={{ width: "300px" }}
+                />
+                <Button
+                    ml="sm"
+                    variant="light"
+                    color="blue"
+                    radius="md"
+                    onClick={handleSearch}
+                >
+                    Search
+                </Button>
+            </Flex>
             <Card
                 shadow="sm"
                 padding="lg"

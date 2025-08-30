@@ -35,16 +35,22 @@ public class MealServiceImpl implements MealService {
     }
 
     @Override
-    public MealResponsePage getAllByUserId(Long userId, int pageNo, int pageSize) {
+    public MealResponsePage getAllByUserId(Long userId, int pageNo, int pageSize, String searchParam) {
         Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(Sort.Direction.ASC, "name"));
-        Page<Meal> meals = this.mealRepository.findAllByUserId(userId, pageable);
-        List<MealResponse> content = meals.getContent().stream().map((mealMapper::modelToResponse)).toList();
-        return mealMapper.responseToResponsePage(meals, content);
+        if (searchParam != null && !searchParam.isEmpty()) {
+            Page<Meal> meals = this.mealRepository.findAllBySearchParam(searchParam, pageable,userId);
+            List<MealResponse> content = meals.getContent().stream().map((mealMapper::modelToResponse)).toList();
+            return mealMapper.responseToResponsePage(meals, content);
+        } else {
+            Page<Meal> meals = this.mealRepository.findAllByUserId(userId, pageable);
+            List<MealResponse> content = meals.getContent().stream().map((mealMapper::modelToResponse)).toList();
+            return mealMapper.responseToResponsePage(meals, content);
+        }
     }
 
     @Override
     public void createMeal(MealDto mealDto, Long userId) {
-        mealRepository.save(mealMapper.dtoToModel(mealDto,userId));
+        mealRepository.save(mealMapper.dtoToModel(mealDto, userId));
     }
 
     @Override
