@@ -1,0 +1,91 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: fitness-config
+  namespace: fitness
+data:
+  SPRING_DATASOURCE_URL: jdbc:postgresql://fitness-postgres-service:5432/FitnessApp
+  SPRING_JPA_HIBERNATE_DDL_AUTO: update
+  SPRING_MAIL_HOST: smtp.gmail.com
+  SPRING_MAIL_PORT: "587"
+  SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH: "true"
+  SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE: "true"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: fitness-secret
+  namespace: fitness
+type: Opaque
+data:
+  SPRING_DATASOURCE_USERNAME: cG9zdGdyZXM=
+  SPRING_DATASOURCE_PASSWORD: TWF0ZWoxMjMh
+  JWT_SECRET_KEY: NmlXajdmdk9xTXRZQTMrNXB6b3pCbGhZSkpHQy9DQU8xbWVGMThQenBxcz0=
+  SPRING_MAIL_USERNAME: bW1hdGVqLm1pbm9za2lAZ21haWwuY29t
+  SPRING_MAIL_PASSWORD: dGFpaCBhYWFoIGxxb2kgdWJ3dw==
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: fitness-postgres-pvc
+  namespace: fitness
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: fitness-postgres
+  namespace: fitness
+spec:
+  serviceName: fitness-postgres-service
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:15
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_DB
+              value: FitnessApp
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: fitness-secret
+                  key: SPRING_DATASOURCE_USERNAME
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: fitness-secret
+                  key: SPRING_DATASOURCE_PASSWORD
+          volumeMounts:
+            - name: postgres-data
+              mountPath: /var/lib/postgresql/data
+      volumes:
+        - name: postgres-data
+          persistentVolumeClaim:
+            claimName: fitness-postgres-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fitness-postgres-service
+  namespace: fitness
+spec:
+  selector:
+    app: postgres
+  ports:
+    - protocol: TCP
+      port: 5432
